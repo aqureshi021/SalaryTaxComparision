@@ -69,7 +69,6 @@
         return;
       }
 
-      // Compute taxable salary considering medical exemption
       let taxableMonthly = grossMonthly;
       let medical = 0, basic = 0;
 
@@ -79,23 +78,22 @@
         taxableMonthly = grossMonthly - medical;
       }
 
-      const annualSalary = taxableMonthly * 12;
-      const oldTax = getTax(annualSalary, taxSlabs.old);
-      const newTax = getTax(annualSalary, taxSlabs.new);
+      const annualTaxable = taxableMonthly * 12;
+      const oldTaxAnnual = getTax(annualTaxable, taxSlabs.old);
+      const newTaxAnnual = getTax(annualTaxable, taxSlabs.new);
+      const oldTaxMonthly = oldTaxAnnual / 12;
+      const newTaxMonthly = newTaxAnnual / 12;
 
       const result = `
-        <strong>Monthly Gross Salary:</strong> PKR ${formatPKR(grossMonthly)}<br>
-        <strong>Basic Salary (66.67%):</strong> PKR ${formatPKR(basic)}<br>
-        <strong>Medical Allowance (10% of Basic):</strong> PKR ${formatPKR(medical)}<br>
         <strong>Monthly Taxable Salary:</strong> PKR ${formatPKR(taxableMonthly)}<br>
-        <strong>Annual Taxable Salary:</strong> PKR ${formatPKR(annualSalary)}<br><br>
+        <strong>Annual Taxable Salary:</strong> PKR ${formatPKR(annualTaxable)}<br><br>
 
-        <strong>Old Tax:</strong> PKR ${formatPKR(oldTax)}<br>
-        <strong>New Tax:</strong> PKR ${formatPKR(newTax)}<br>
-        <strong>Tax Saved:</strong> PKR ${formatPKR(oldTax - newTax)}<br><br>
+        <strong>Old Tax:</strong> Annual PKR ${formatPKR(oldTaxAnnual)} | Monthly PKR ${formatPKR(oldTaxMonthly)}<br>
+        <strong>New Tax:</strong> Annual PKR ${formatPKR(newTaxAnnual)} | Monthly PKR ${formatPKR(newTaxMonthly)}<br>
+        <strong>Tax Saved:</strong> Annual PKR ${formatPKR(oldTaxAnnual - newTaxAnnual)} | Monthly PKR ${formatPKR(oldTaxMonthly - newTaxMonthly)}<br><br>
 
-        <strong>Monthly Net Salary (Old):</strong> PKR ${formatPKR((annualSalary - oldTax)/12)}<br>
-        <strong>Monthly Net Salary (New):</strong> PKR ${formatPKR((annualSalary - newTax)/12)}
+        <strong>Monthly Net Salary (Old):</strong> PKR ${formatPKR(grossMonthly - oldTaxMonthly)}<br>
+        <strong>Monthly Net Salary (New):</strong> PKR ${formatPKR(grossMonthly - newTaxMonthly)}
       `;
 
       document.getElementById('output').innerHTML = result;
